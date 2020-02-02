@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <style>
+        .anyClass {
+            height: 400px;
+            overflow-y: scroll;
+            font-size: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="row justify-content-center">
+        <div id="first" class="col-md-2 mr-5">
+            <ul class="nav nav-pills nav-stacked anyClass">
+                <component :is="dynamicComponent" />
+            </ul>
+        </div>
+        <div id="second" class="col-md-2">
+            <ul class="nav nav-pills nav-stacked anyClass">
+                <component :is="dynamicComponent" />
+            </ul>
+        </div>
+        <div id="third" class="col-md-2 ml-5">
+            <ul class="nav nav-pills nav-stacked anyClass">
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+
+        let firstCategoryArray = []
+        let secondCategoryArray = []
+        let thirdCategoryArray = []
+
+
+        var first = new Vue({
+            el: "#first",
+            data: {
+                firstCategory: ""
+            },
+            methods: {
+                getList: function () {
+
+                }
+            },
+            computed: {
+                dynamicComponent: function () {
+                    return {
+                        data: function () {
+                            return {
+                                selected: undefined
+                            }
+                        },
+                        template: `<div>${this.firstCategory}</div>`,
+                        methods: {
+                            getCategory: function (num) {
+                                this.selected = num
+
+                                axios.get("http://localhost:8000/getSecondCategory?firstCategoryId=" + firstCategoryArray[num].id)
+                                    .then(resData => {
+                                        secondCategoryArray = resData.data
+                                        second.secondCategory = ""
+
+                                        secondCategoryArray.forEach(element => {
+                                            second.secondCategory += `<li class="nav-item">
+                                                                        <a class="nav-link" v-on:click="getCategory" href="#">` + element.name + `</a>
+                                                                    </li>`
+
+                                        });
+
+                                    }).catch(error => {
+                                        console.log(error)
+                                    })
+                            }
+                        }
+                    }
+                }
+            },
+        })
+
+        var second = new Vue({
+            el: "#second",
+            data: {
+                secondCategory: ""
+            },
+            methods: {
+                getList: function () {
+
+                }
+            },
+            computed: {
+                dynamicComponent: function () {
+                    return {
+                        data: function () {
+                            return new Object()
+                        },
+                        template: `<div>${this.secondCategory}</div>`,
+                        methods: {
+                            getCategory: function (li) {
+                                li.target.classList.toggle("active")
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+
+        axios.get("http://localhost:8000/getFirstCategory")
+            .then(resData => {
+                firstCategoryArray = resData.data
+
+                for(var i = 0; i < firstCategoryArray.length; i++){
+                    first.firstCategory += `<li class="nav-item">
+                                                <a class="nav-link" v-on:click="getCategory(` + i + `)" v-bind:class="{ active: selected == ` + i + `}" href="#">` + firstCategoryArray[i].name + `</a>
+                                            </li>`
+                }
+            }).catch(error => {
+                console.log(error)
+            })
+
+    </script>
+</body>
+
+</html>

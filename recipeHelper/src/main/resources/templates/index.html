@@ -30,6 +30,7 @@
         </div>
         <div id="third" class="col-md-2 ml-5">
             <ul class="nav nav-pills nav-stacked anyClass">
+                <component :is="dynamicComponent" />
             </ul>
         </div>
     </div>
@@ -51,16 +52,10 @@
         let secondCategoryArray = []
         let thirdCategoryArray = []
 
-
         var first = new Vue({
             el: "#first",
             data: {
                 firstCategory: ""
-            },
-            methods: {
-                getList: function () {
-
-                }
             },
             computed: {
                 dynamicComponent: function () {
@@ -74,18 +69,19 @@
                         methods: {
                             getCategory: function (num) {
                                 this.selected = num
+                                third.thirdCategory = ""
 
-                                axios.get("http://localhost:8000/getSecondCategory?firstCategoryId=" + firstCategoryArray[num].id)
+                                axios.get("http://192.168.0.15:8000/getSecondCategory?firstCategoryId=" + firstCategoryArray[num].id)
                                     .then(resData => {
                                         secondCategoryArray = resData.data
                                         second.secondCategory = ""
 
-                                        secondCategoryArray.forEach(element => {
-                                            second.secondCategory += `<li class="nav-item">
-                                                                        <a class="nav-link" v-on:click="getCategory" href="#">` + element.name + `</a>
-                                                                    </li>`
 
-                                        });
+                                        for (var i = 0; i < secondCategoryArray.length; i++) {
+                                            second.secondCategory += `<li class="nav-item">
+                                                                        <a class="nav-link" v-on:click="getCategory(` + i + `)" v-bind:class="{ active: selected == ` + i + `}" href="#">` + secondCategoryArray[i].name + `</a>
+                                                                    </li>`
+                                        }
 
                                     }).catch(error => {
                                         console.log(error)
@@ -102,21 +98,67 @@
             data: {
                 secondCategory: ""
             },
-            methods: {
-                getList: function () {
+            computed: {
+                dynamicComponent: function () {
+                    return {
+                        data: function () {
+                            return {
+                                selected: undefined
+                            }
+                        },
+                        template: `<div>${this.secondCategory}</div>`,
+                        methods: {
+                            getCategory: function (num) {
+                                this.selected = num
 
+                                axios.get("http://192.168.0.15:8000/getThirdCategory?secondCategoryId=" + secondCategoryArray[num].id)
+                                    .then(resData => {
+                                        thirdCategoryArray = resData.data
+                                        third.thirdCategory = ""
+
+
+                                        for (var i = 0; i < thirdCategoryArray.length; i++) {
+                                            third.thirdCategory += `<li class="nav-item">
+                                                                        <a class="nav-link" v-on:click="getCategory(` + i + `)" v-bind:class="{ active: selected == ` + i + `}" href="#">` + thirdCategoryArray[i].name + `</a>
+                                                                    </li>`
+                                        }
+
+                                    }).catch(error => {
+                                        console.log(error)
+                                    })
+                            }
+                        }
+                    }
                 }
+            }
+        })
+
+        var third = new Vue({
+            el: "#third",
+            data: {
+                thirdCategory: ""
             },
             computed: {
                 dynamicComponent: function () {
                     return {
                         data: function () {
-                            return new Object()
+                            return {
+                                selected: undefined
+                            }
                         },
-                        template: `<div>${this.secondCategory}</div>`,
+                        template: `<div>${this.thirdCategory}</div>`,
                         methods: {
-                            getCategory: function (li) {
-                                li.target.classList.toggle("active")
+                            getCategory: function (num) {
+                                this.selected = num
+                                axios.get("http://192.168.0.15:8000/getThirdCategoryRecipe?thirdCategoryId=" + thirdCategoryArray[num].id)
+                                    .then(resData => {
+                                        console.log(resData.data)
+
+                                    }).catch(error => {
+                                        console.log(error)
+                                    })
+
+                                
                             }
                         }
                     }
@@ -125,11 +167,11 @@
         })
 
 
-        axios.get("http://localhost:8000/getFirstCategory")
+        axios.get("http://192.168.0.15:8000/getFirstCategory")
             .then(resData => {
                 firstCategoryArray = resData.data
 
-                for(var i = 0; i < firstCategoryArray.length; i++){
+                for (var i = 0; i < firstCategoryArray.length; i++) {
                     first.firstCategory += `<li class="nav-item">
                                                 <a class="nav-link" v-on:click="getCategory(` + i + `)" v-bind:class="{ active: selected == ` + i + `}" href="#">` + firstCategoryArray[i].name + `</a>
                                             </li>`

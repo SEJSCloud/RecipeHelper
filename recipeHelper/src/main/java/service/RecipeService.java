@@ -13,6 +13,7 @@ import model.dao.SecondCategoryRepository;
 import model.dao.ThirdCategoryRepository;
 import model.domain.FirstCategory;
 import model.domain.SecondCategory;
+import model.domain.ThirdCategory;
 
 @Service
 public class RecipeService {
@@ -55,6 +56,22 @@ public class RecipeService {
 	
 	public Iterable<SecondCategory> getSecondCategory(String firstCategoryId) {
 		return sRepo.findAllByFirstCategory(fRepo.findById(firstCategoryId).get());
+	}
+
+	// ==================================================================================
+	
+	// 세번째 카테고리
+	
+	public Iterable<ThirdCategory> getThirdCategory(String secondCategoryId) {
+		return tRepo.findAllBySecondCategory(sRepo.findById(secondCategoryId).get());
+	}
+	
+	public ThirdCategory getThirdCategoryRecipe(String thirdCategoryId) {
+		return tRepo.findById(thirdCategoryId).get();
+	}
+	
+	public Iterable<ThirdCategory> getRecipeByfirst(String firstCategoryId) {
+		return tRepo.findAllByFirstCategory(fRepo.findById(firstCategoryId).get());
 	}
 
 	// ==================================================================================

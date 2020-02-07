@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import model.domain.FirstCategory;
 import model.domain.SecondCategory;
+import model.domain.ThirdCategory;
 import service.RecipeService;
 
 @CrossOrigin(origins = "http://localhost:8000")
@@ -37,5 +38,20 @@ public class RecipeRestController {
 	@GetMapping("/getSecondCategory")
 	public Iterable<SecondCategory> getSecondCategory(String firstCategoryId) {
 		return service.getSecondCategory(firstCategoryId);
+	}
+	
+	@GetMapping("/getThirdCategory")
+	public Iterable<ThirdCategory> getThirdCategory(String secondCategoryId) {
+		return service.getThirdCategory(secondCategoryId);
+	}
+	
+	@GetMapping("/getThirdCategoryRecipe")
+	public ThirdCategory getThirdCategoryRecipe(String thirdCategoryId) {
+		return service.getThirdCategoryRecipe(thirdCategoryId);
+	}
+	
+	@GetMapping("/getRecipeByfirst")
+	public Iterable<ThirdCategory> getRecipeByfirst(String firstCategoryId) {
+		return service.getRecipeByfirst(firstCategoryId);
 	}
 }

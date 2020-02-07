@@ -11,6 +11,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -43,15 +45,15 @@ public class ThirdCategory {
 	@Column(name = "difficulty", length = 10)
 	private String difficulty;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "thirdCategory")
 	private List<Ingredients> ingredients = new ArrayList<Ingredients>();
 	
-//	@OneToMany(mappedBy = "thirdCategory")
-//	private List<Seasoning> seasoning = new ArrayList<Seasoning>();
-	
+	@JsonIgnore
 	@OneToMany(mappedBy = "thirdCategory")
 	private List<RecipeList> recipeList = new ArrayList<RecipeList>();
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "thirdCategory")
 	private List<ImgList> imgList = new ArrayList<ImgList>();
 	

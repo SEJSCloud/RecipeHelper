@@ -49,4 +49,9 @@ public class RecipeRestController {
 	public ThirdCategory getThirdCategoryRecipe(String thirdCategoryId) {
 		return service.getThirdCategoryRecipe(thirdCategoryId);
 	}
+	
+	@GetMapping("/getRecipeByfirst")
+	public Iterable<ThirdCategory> getRecipeByfirst(String firstCategoryId) {
+		return service.getRecipeByfirst(firstCategoryId);
+	}
 }

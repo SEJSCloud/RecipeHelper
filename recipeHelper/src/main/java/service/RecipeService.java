@@ -69,6 +69,10 @@ public class RecipeService {
 	public ThirdCategory getThirdCategoryRecipe(String thirdCategoryId) {
 		return tRepo.findById(thirdCategoryId).get();
 	}
+	
+	public Iterable<ThirdCategory> getRecipeByfirst(String firstCategoryId) {
+		return tRepo.findAllByFirstCategory(fRepo.findById(firstCategoryId).get());
+	}
 
 	// ==================================================================================
 

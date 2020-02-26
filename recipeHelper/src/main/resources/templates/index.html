@@ -21,41 +21,73 @@
 </head>
 
 <body>
-    <div class="row justify-content-center border border-dark rounded mx-5">
-        <div id="first" class="col-md-2 mr-5">
+    <h1>고민말고 찾아먹자! 레시피 헬퍼</h1>
+
+    <div class="row justify-content-center border border-secondary rounded bg-light" style="margin-left: 10rem; margin-right: 10rem;">
+        <div id="first" class="col mr-5">
             <ul class="nav nav-pills nav-stacked anyClass">
                 <component :is="dynamicComponent" />
             </ul>
         </div>
-        <div id="second" class="col-md-2">
+        <div id="second" class="col">
             <ul class="nav nav-pills nav-stacked anyClass">
                 <component :is="dynamicComponent" />
             </ul>
         </div>
-        <div id="third" class="col-md-2 ml-5">
+        <div id="third" class="col ml-5">
             <ul class="nav nav-pills nav-stacked anyClass">
                 <component :is="dynamicComponent" />
             </ul>
         </div>
     </div>
     <div id="content" class="py-5 text-center">
-        <div class="container">
+        <div class="container border border-secondary rounded bg-light">
             <div class="text-dark mb-4">
-                <h1>레시피 목록</h1>
+                <h1 class="my-3">레시피 목록</h1>
             </div>
             <div v-for="recipe in recipes" class="card-deck mb-4">
-                <div class="card">
+                <div class="card border border-secondary rounded">
                     <img v-bind:src="recipe[0].thumbnail" alt="">
                     <div class="card-body">
-                        <h3 class="card-title">{{recipe[0].name}}</h3>
-                        <p class="card-text">{{recipe[0].servings}} , {{recipe[0].time}} , {{recipe[0].difficulty}}</p>
+                        <h1 class="card-title">{{recipe[0].name}}</h1>
+                        <table class="table table-hover">
+                            <thead>
+                              <tr>
+                                <th scope="col">양</th>
+                                <th scope="col">시간</th>
+                                <th scope="col">난이도</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{recipe[0].servings}}</td>
+                                <td>{{recipe[0].time}}</td>
+                                <td>{{recipe[0].difficulty}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
                     </div>
                 </div>
                 <div class="card" v-if="recipe[1] != undefined">
                     <img v-bind:src="recipe[1].thumbnail" alt="">
-                    <div class="card-body">
-                        <h3 class="card-title">{{recipe[1].name}}</h3>
-                        <p class="card-text">{{recipe[1].servings}} , {{recipe[1].time}} , {{recipe[1].difficulty}}</p>
+                    <div class="card-body border border-secondary rounded">
+                        <h1 class="card-title">{{recipe[1].name}}</h1>
+                        <table class="table table-hover">
+                            <thead>
+                              <tr>
+                                <th scope="col">양</th>
+                                <th scope="col">시간</th>
+                                <th scope="col">난이도</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{recipe[0].servings}}</td>
+                                <td>{{recipe[0].time}}</td>
+                                <td>{{recipe[0].difficulty}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
                     </div>
                 </div>
                 <div class="card" v-if="recipe[1] == undefined">
@@ -100,7 +132,7 @@
                                 this.selected = num
                                 third.thirdCategory = ""
 
-                                axios.get("http://localhost:8000/getSecondCategory?firstCategoryId=" + firstCategoryArray[num].id)
+                                axios.get("http://192.168.0.15:8000/getSecondCategory?firstCategoryId=" + firstCategoryArray[num].id)
                                     .then(resData => {
                                         secondCategoryArray = resData.data
                                         second.secondCategory = ""
@@ -116,10 +148,10 @@
                                         console.log(error)
                                     })
 
-                                axios.get("http://localhost:8000/getRecipeByfirst?firstCategoryId=" + firstCategoryArray[num].id)
+                                axios.get("http://192.168.0.15:8000/getRecipeByfirst?firstCategoryId=" + firstCategoryArray[num].id)
                                     .then(resData => {
 
-                                        let length = parseInt(resData.data.length / 2)
+                                        let length =  Number.isInteger(resData.data.length / 2) == true ? parseInt(resData.data.length / 2) : parseInt(resData.data.length / 2) + 1
                                         content.recipes = []
 
                                         for (let i = 0; i < length - 1; i++) {
@@ -129,10 +161,10 @@
                                         }
 
                                         content.recipes.push([])
-                                        if(resData.data.length % 2 == 0){
+                                        if (resData.data.length % 2 == 0) {
                                             content.recipes[length - 1].push(resData.data[(length - 1) * 2])
                                             content.recipes[length - 1].push(resData.data[(length - 1) * 2 + 1])
-                                        }else{
+                                        } else {
                                             content.recipes[length - 1].push(resData.data[(length - 1) * 2])
                                         }
 
@@ -164,7 +196,7 @@
                             getCategory: function (num) {
                                 this.selected = num
 
-                                axios.get("http://localhost:8000/getThirdCategory?secondCategoryId=" + secondCategoryArray[num].id)
+                                axios.get("http://192.168.0.15:8000/getThirdCategory?secondCategoryId=" + secondCategoryArray[num].id)
                                     .then(resData => {
                                         thirdCategoryArray = resData.data
                                         third.thirdCategory = ""
@@ -176,9 +208,28 @@
                                                                     </li>`
                                         }
 
+                                        let length =  Number.isInteger(thirdCategoryArray.length / 2) == true ? parseInt(thirdCategoryArray.length / 2) : parseInt(thirdCategoryArray.length / 2) + 1
+                                        console.log(length)
+                                        content.recipes = []
+
+                                        for (let i = 0; i < length - 1; i++) {
+                                            content.recipes.push([])
+                                            content.recipes[i].push(thirdCategoryArray[i * 2])
+                                            content.recipes[i].push(thirdCategoryArray[i * 2 + 1])
+                                        }
+
+                                        content.recipes.push([])
+                                        if (thirdCategoryArray.length % 2 == 0) {
+                                            content.recipes[length - 1].push(thirdCategoryArray[(length - 1) * 2])
+                                            content.recipes[length - 1].push(thirdCategoryArray[(length - 1) * 2 + 1])
+                                        } else {
+                                            content.recipes[length - 1].push(thirdCategoryArray[(length - 1) * 2])
+                                        }
+
                                     }).catch(error => {
                                         console.log(error)
                                     })
+
                             }
                         }
                     }
@@ -203,9 +254,13 @@
                         methods: {
                             getCategory: function (num) {
                                 this.selected = num
-                                axios.get("http://localhost:8000/getThirdCategoryRecipe?thirdCategoryId=" + thirdCategoryArray[num].id)
+                                axios.get("http://192.168.0.15:8000/getThirdCategoryRecipe?thirdCategoryId=" + thirdCategoryArray[num].id)
                                     .then(resData => {
-                                        console.log(resData.data)
+                                        content.recipes = []
+
+                                        content.recipes.push([])
+                                        content.recipes[0].push(resData.data)
+                                        
 
                                     }).catch(error => {
                                         console.log(error)
@@ -227,7 +282,7 @@
         })
 
 
-        axios.get("http://localhost:8000/getFirstCategory")
+        axios.get("http://192.168.0.15:8000/getFirstCategory")
             .then(resData => {
                 firstCategoryArray = resData.data
 
